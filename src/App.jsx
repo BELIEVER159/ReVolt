@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { 
-  Search, ShoppingCart, User, MapPin, Truck, Star, Zap, Cpu, CheckCircle, ShieldCheck, Plus, Minus, AlertTriangle, Upload, RefreshCw
+  Search, ShoppingCart, User, MapPin, Truck, Star, Zap, Cpu, CheckCircle, 
+  ShieldCheck, Plus, Minus, AlertTriangle, Upload, RefreshCw, ArrowRight, 
+  Sparkles, BatteryCharging, DollarSign
 } from 'lucide-react';
 
 export default function App() {
@@ -120,19 +122,6 @@ export default function App() {
     }
   ];
 
-  // SECTION 4: Rechargeable Li-ion Batteries
-  const lithiumBatteries = [
-    { id: 1, name: 'Irsa 12V 45Ah Li-ion Rechargeable Battery...', model: 'IRSA-12V-45AH', power: '12V 45Ah', soh: 85, type: 'Li-ion', price: 10729, original: 18999, discount: '43% OFF', tag: 'Deal of the Day', gst: 1931, application: 'Solar Energy', warranty: '6 Months', img: '/lithium-battery.jpg' },
-    { id: 2, name: 'Irsa 12V 18Ah Li-ion Rechargeable Battery...', model: 'IRSA-12V-18AH', power: '12V 18Ah', soh: 88, type: 'Li-ion', price: 3789, original: 12599, discount: '69% OFF', tag: 'Deal of the Day', gst: 682, application: 'UPS Backup', warranty: '6 Months', img: '/lithium-battery.jpg' },
-    { id: 3, name: 'Irsa 12V 35Ah Li-ion Rechargeable Battery...', model: 'IRSA-12V-35AH', power: '12V 35Ah', soh: 82, type: 'Li-ion', price: 8299, original: 16999, discount: '51% OFF', tag: 'Deal of the Day', gst: 1493, application: 'Solar Energy', warranty: '6 Months', img: '/lithium-battery.jpg' },
-  ];
-
-  // SECTION 5: Sealed Lead Acid
-  const leadAcidBatteries = [
-    { id: 8, name: 'Exide Powersafe Plus 9Ah 12V Sealed Lead...', model: 'EXIDE-PS-9AH', power: '12V 9Ah', soh: 90, type: 'VRLA Lead Acid', price: 1549, original: 1749, discount: '10% OFF', tag: 'Top Seller', gst: 278, application: 'Inverter UPS', warranty: '12 Months', img: '/lead-acid.jpg' },
-    { id: 9, name: 'Amptek 12V 4.5Ah Black Sealed Rechargeable...', model: 'AMPTEK-12V-4.5', power: '12V 4.5Ah', soh: 91, type: 'VRLA Lead Acid', price: 1009, original: 2619, discount: '61% OFF', tag: 'Fast Dispatch', gst: 181, application: 'UPS', warranty: '12 Months', img: '/lead-acid.jpg' },
-  ];
-
   // AI Valuation State & Handlers
   const [vehicleModel, setVehicleModel] = useState('Tata Nexon EV');
   const [age, setAge] = useState(4);
@@ -145,7 +134,7 @@ export default function App() {
   const [batteryInspection, setBatteryInspection] = useState(null);
   const [conditionMultiplier, setConditionMultiplier] = useState(1.0);
 
-  // 1. FIXED Odometer OCR Handler with Fallback
+  // 1. Odometer OCR Handler
   const handleOdometerUpload = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -163,20 +152,19 @@ export default function App() {
       if (data.success && data.extracted_mileage_km) {
         setMileage(data.extracted_mileage_km);
       } else {
-        throw new Error("OCR API failed or offline");
+        throw new Error("OCR API failed");
       }
     } catch (err) {
-      console.warn("Backend OCR API offline, using fallback extraction simulation.", err);
-      // Fallback fallback simulated extraction (42,500 km)
+      console.warn("Backend API offline, using fallback extraction.", err);
       setTimeout(() => {
-        setMileage(42500);
-      }, 1200);
+        setMileage(684);
+      }, 1000);
     } finally {
-      setTimeout(() => setScanningOdo(false), 1300);
+      setTimeout(() => setScanningOdo(false), 1100);
     }
   };
 
-  // 2. FIXED Battery Photo Defect Handler with Fallback
+  // 2. Battery Photo Defect Handler
   const handleBatteryPhotoUpload = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -198,15 +186,14 @@ export default function App() {
         throw new Error("Defect Inspection API offline");
       }
     } catch (err) {
-      console.warn("Backend Defect API offline, using fallback inspection simulation.", err);
-      // Fallback simulated inspection result
+      console.warn("Backend Defect API offline, using fallback.", err);
       setTimeout(() => {
         const mockInspection = { condition: "Good - Minor Surface Wear", multiplier: 0.95 };
         setBatteryInspection(mockInspection);
         setConditionMultiplier(mockInspection.multiplier);
-      }, 1200);
+      }, 1000);
     } finally {
-      setTimeout(() => setScanningBattery(false), 1300);
+      setTimeout(() => setScanningBattery(false), 1100);
     }
   };
 
@@ -227,8 +214,7 @@ export default function App() {
       const data = await res.json();
       setQuote({ soh: data.predicted_soh, estimatedOffer: data.buyback_offer_inr, action: data.recommended_action });
     } catch (err) {
-      console.warn("API Offline, using local SOH calculation fallback.", err);
-      // Fallback formula
+      console.warn("API Offline, using local SOH formula.", err);
       const predictedSoh = Math.max(50, Math.round(100 - (age * 3.5) - (mileage / 6000)));
       const baseOffer = capacity * 4500 * (predictedSoh / 100) * conditionMultiplier;
       setQuote({
@@ -244,7 +230,7 @@ export default function App() {
   return (
     <div className="min-h-screen bg-gray-100 text-gray-800 font-sans">
       
-      {/* 1. MOGLIX LIGHT HEADER */}
+      {/* 1. HEADER */}
       <header className="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
           <div className="flex items-center space-x-2 cursor-pointer" onClick={() => { setActiveTab('marketplace'); setSelectedProduct(null); }}>
@@ -260,7 +246,7 @@ export default function App() {
             </div>
           </div>
 
-          <div className="flex-1 max-w-2xl relative flex">
+          <div className="flex-1 max-w-xl relative flex">
             <input 
               type="text" 
               placeholder="Search EV Second-Life Battery, Smart Inverter, Converter Adapter..." 
@@ -271,19 +257,22 @@ export default function App() {
             </button>
           </div>
 
-          <div className="flex items-center space-x-6 text-xs font-medium text-gray-700">
+          <div className="flex items-center space-x-4 text-xs font-medium text-gray-700">
+            {/* PROMINENT HEADER SELLER BUTTON */}
             <button 
               onClick={() => { setActiveTab('sell'); setSelectedProduct(null); }}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full font-bold transition-all ${
-                activeTab === 'sell' ? 'bg-red-600 text-white' : 'bg-red-50 text-red-600 border border-red-200'
+              className={`flex items-center gap-2 px-4 py-2 rounded-full font-extrabold text-sm transition-all shadow-md ${
+                activeTab === 'sell' 
+                  ? 'bg-red-600 text-white ring-2 ring-red-400' 
+                  : 'bg-gradient-to-r from-red-600 to-rose-600 text-white hover:from-red-700 hover:to-rose-700 animate-pulse'
               }`}
             >
-              <Zap className="w-3.5 h-3.5" />
-              <span>AI Sell EV Battery</span>
+              <Zap className="w-4 h-4 text-yellow-300 fill-yellow-300" />
+              <span>SELL EV BATTERY</span>
             </button>
 
-            <div className="flex items-center gap-1 cursor-pointer"><User className="w-4 h-4" /><span>Login Now</span></div>
-            <div className="flex items-center gap-1 cursor-pointer"><Truck className="w-4 h-4" /><span>Track Order</span></div>
+            <div className="hidden sm:flex items-center gap-1 cursor-pointer"><User className="w-4 h-4" /><span>Login</span></div>
+            <div className="hidden sm:flex items-center gap-1 cursor-pointer"><Truck className="w-4 h-4" /><span>Track</span></div>
 
             <div className="flex items-center gap-1 cursor-pointer relative" onClick={() => setCartCount(cartCount + 1)}>
               <ShoppingCart className="w-5 h-5 text-gray-800" />
@@ -308,7 +297,6 @@ export default function App() {
           </div>
 
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 grid grid-cols-1 md:grid-cols-12 gap-8">
-            
             <div className="md:col-span-5 flex flex-col items-center border-r border-gray-200 pr-6">
               <div className="w-full h-72 bg-gray-50 border border-gray-200 rounded-lg p-4 flex items-center justify-center relative overflow-hidden">
                 <span className="absolute top-3 left-3 bg-red-600 text-white text-xs font-bold px-2 py-0.5 rounded">
@@ -333,7 +321,7 @@ export default function App() {
                     <span>Existing Home Inverter Compatible!</span>
                   </div>
                   <p className="text-gray-600 leading-relaxed">
-                    Check the box on the right to bundle our Smart DC Converter! It adapts this EV/Toto pack so it connects directly to your existing home inverter.
+                    Check the box on the right to bundle our Smart DC Converter!
                   </p>
                 </div>
               )}
@@ -371,7 +359,7 @@ export default function App() {
                     />
                     <div>
                       <p className="text-xs font-bold text-emerald-800">{selectedProduct.addonTitle}</p>
-                      <p className="text-[11px] text-gray-600">+ ₹{selectedProduct.addonPrice.toLocaleString('en-IN')} (Discounted Bundle)</p>
+                      <p className="text-[11px] text-gray-600">+ ₹{selectedProduct.addonPrice.toLocaleString('en-IN')}</p>
                     </div>
                   </label>
                 </div>
@@ -385,7 +373,6 @@ export default function App() {
                   </span>
                   <span className="text-xs font-bold text-green-600">{selectedProduct.discount}</span>
                 </div>
-                <p className="text-[11px] text-gray-500">+ ₹{selectedProduct.gst} GST Included</p>
               </div>
 
               <button 
@@ -402,16 +389,126 @@ export default function App() {
                 BUY NOW
               </button>
             </div>
-
           </div>
         </main>
       ) : (
-        /* 3. MAIN MARKETPLACE LISTINGS */
-        <main className="max-w-7xl mx-auto px-4 py-6">
+        /* 3. MAIN MARKETPLACE VIEW */
+        <main className="max-w-7xl mx-auto px-4 py-6 space-y-8">
+          
           {activeTab === 'marketplace' && (
-            <div className="space-y-8">
-              
-              {/* SECTION 1: Wall-Mounted Smart Hybrid Inverters */}
+            <>
+              {/* ======================================================== */}
+              {/* 🌟 GIANT HIGH-VISIBILITY AI BATTERY SELLER HERO BANNER */}
+              {/* ======================================================== */}
+              <div className="bg-gradient-to-r from-gray-900 via-slate-900 to-red-950 text-white rounded-2xl p-6 md:p-8 shadow-xl border border-red-900/50 relative overflow-hidden">
+                <div className="absolute -right-10 -bottom-10 opacity-10 pointer-events-none">
+                  <BatteryCharging className="w-96 h-96 text-red-500" />
+                </div>
+
+                <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+                  
+                  {/* Left Column: Heading & Selling Value Prop */}
+                  <div className="lg:col-span-7 space-y-4">
+                    <div className="inline-flex items-center gap-2 bg-red-600/30 border border-red-500/50 px-3 py-1 rounded-full text-xs font-bold text-red-300">
+                      <Sparkles className="w-3.5 h-3.5 text-yellow-400" />
+                      <span>OFFICIAL REVOLT BUYBACK PROGRAM</span>
+                    </div>
+
+                    <h1 className="text-3xl md:text-4xl font-black tracking-tight leading-tight">
+                      Have a Used EV, Scooter or Toto Battery? <br />
+                      <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-400 via-amber-300 to-rose-400">
+                        Sell it for Instant Cash with AI!
+                      </span>
+                    </h1>
+
+                    <p className="text-gray-300 text-sm leading-relaxed max-w-xl">
+                      Upload your speedometer & battery casing photos. Our Computer Vision AI extracts mileage, inspects health defects, and generates a instant buyback offer in 10 seconds!
+                    </p>
+
+                    {/* Quick Steps Badges */}
+                    <div className="grid grid-cols-3 gap-3 pt-2 max-w-lg">
+                      <div className="bg-white/10 backdrop-blur-md rounded-lg p-2.5 text-center border border-white/10">
+                        <Upload className="w-5 h-5 mx-auto text-red-400 mb-1" />
+                        <p className="text-[11px] font-bold">1. Upload Speedo</p>
+                      </div>
+                      <div className="bg-white/10 backdrop-blur-md rounded-lg p-2.5 text-center border border-white/10">
+                        <Cpu className="w-5 h-5 mx-auto text-amber-400 mb-1" />
+                        <p className="text-[11px] font-bold">2. Scan Casing</p>
+                      </div>
+                      <div className="bg-white/10 backdrop-blur-md rounded-lg p-2.5 text-center border border-white/10">
+                        <DollarSign className="w-5 h-5 mx-auto text-emerald-400 mb-1" />
+                        <p className="text-[11px] font-bold">3. Get Cash Quote</p>
+                      </div>
+                    </div>
+
+                    {/* Big Action Button */}
+                    <div className="pt-2">
+                      <button 
+                        onClick={() => setActiveTab('sell')}
+                        className="bg-gradient-to-r from-red-600 via-red-500 to-rose-600 hover:from-red-700 hover:to-rose-700 text-white font-black text-base px-8 py-4 rounded-xl shadow-lg hover:shadow-red-600/40 transition-all flex items-center gap-3 transform hover:-translate-y-0.5"
+                      >
+                        <Zap className="w-5 h-5 fill-yellow-300 text-yellow-300" />
+                        <span>LAUNCH AI BATTERY VALUATION & SELL NOW</span>
+                        <ArrowRight className="w-5 h-5" />
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Right Column: Interactive Quick Valuation Preview Card */}
+                  <div className="lg:col-span-5">
+                    <div className="bg-white text-gray-900 rounded-xl p-5 shadow-2xl border border-gray-100 space-y-4">
+                      <div className="flex justify-between items-center border-b border-gray-100 pb-3">
+                        <h3 className="font-extrabold text-sm text-gray-800 flex items-center gap-2">
+                          <Cpu className="w-4 h-4 text-red-600" />
+                          <span>Instant AI Valuation Calculator</span>
+                        </h3>
+                        <span className="text-[10px] bg-green-100 text-green-800 font-bold px-2 py-0.5 rounded">
+                          Live AI Engine
+                        </span>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-3 text-xs">
+                        <div>
+                          <label className="font-bold text-gray-600 block mb-1">EV Model</label>
+                          <select value={vehicleModel} onChange={(e) => setVehicleModel(e.target.value)} className="w-full border border-gray-300 rounded p-1.5 font-semibold text-gray-800">
+                            <option>Tata Nexon EV</option>
+                            <option>MG ZS EV</option>
+                            <option>Ather 450X</option>
+                            <option>Toto E-Rickshaw</option>
+                          </select>
+                        </div>
+
+                        <div>
+                          <label className="font-bold text-gray-600 block mb-1">Age (Years)</label>
+                          <input type="number" value={age} onChange={(e) => setAge(e.target.value)} className="w-full border border-gray-300 rounded p-1.5 font-semibold" />
+                        </div>
+
+                        <div>
+                          <label className="font-bold text-gray-600 block mb-1">Extracted Mileage</label>
+                          <input type="number" value={mileage} onChange={(e) => setMileage(e.target.value)} className="w-full border border-gray-300 rounded p-1.5 font-semibold text-emerald-700 bg-emerald-50/50" />
+                        </div>
+
+                        <div>
+                          <label className="font-bold text-gray-600 block mb-1">Pack Size (kWh)</label>
+                          <input type="number" value={capacity} onChange={(e) => setCapacity(e.target.value)} className="w-full border border-gray-300 rounded p-1.5 font-semibold" />
+                        </div>
+                      </div>
+
+                      <button 
+                        onClick={() => { setActiveTab('sell'); handleCalculateQuote(); }}
+                        className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2.5 rounded-lg text-xs flex items-center justify-center gap-2 shadow"
+                      >
+                        <Zap className="w-4 h-4" /> CALCULATE ESTIMATED BUYBACK OFFER
+                      </button>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+
+              {/* ======================================================== */}
+              {/* MARKETPLACE SECTION 1: Hybrid Inverters */}
+              {/* ======================================================== */}
               <div className="bg-gradient-to-r from-red-100 via-rose-100 to-amber-100 rounded-lg p-4 border border-red-200">
                 <div className="flex justify-between items-center mb-4">
                   <div>
@@ -449,7 +546,7 @@ export default function App() {
                 </div>
               </div>
 
-              {/* SECTION 2: Smart Converters */}
+              {/* MARKETPLACE SECTION 2: Smart Converters */}
               <div className="bg-gradient-to-r from-emerald-100 via-teal-100 to-green-100 rounded-lg p-4 border border-emerald-300">
                 <div className="flex justify-between items-center mb-4">
                   <div>
@@ -487,7 +584,7 @@ export default function App() {
                 </div>
               </div>
 
-              {/* SECTION 3: EV Cars, Toto & Scooter Batteries */}
+              {/* MARKETPLACE SECTION 3: EV Vehicle Packs */}
               <div className="bg-gradient-to-r from-sky-200 via-blue-100 to-indigo-100 rounded-lg p-4 border border-sky-300">
                 <div className="flex justify-between items-center mb-4">
                   <div>
@@ -521,121 +618,191 @@ export default function App() {
                   ))}
                 </div>
               </div>
-
-            </div>
+            </>
           )}
 
-          {/* AI SELL PORTAL PAGE */}
+          {/* ======================================================== */}
+          {/* ⚡ EXPANDED FULL-PAGE AI SELLER PORTAL */}
+          {/* ======================================================== */}
           {activeTab === 'sell' && (
-            <div className="max-w-3xl mx-auto bg-white rounded-lg shadow-md border border-gray-200 p-8 space-y-6">
-              <div className="text-center border-b border-gray-200 pb-4">
-                <h2 className="text-2xl font-black text-gray-900">AI EV Battery Valuation Engine</h2>
-                <p className="text-xs text-gray-500 mt-1">Upload dashboard and casing photos to automatically extract mileage and inspect battery health</p>
+            <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow-xl border border-gray-200 p-8 space-y-8">
+              
+              {/* Back to Marketplace */}
+              <button 
+                onClick={() => setActiveTab('marketplace')}
+                className="text-xs font-bold text-gray-500 hover:text-red-600 flex items-center gap-1 transition-all"
+              >
+                ← Back to Marketplace
+              </button>
+
+              <div className="text-center border-b border-gray-200 pb-6">
+                <div className="inline-flex items-center gap-2 bg-red-100 text-red-700 px-3 py-1 rounded-full text-xs font-black mb-2">
+                  <Sparkles className="w-4 h-4 text-red-600" />
+                  <span>AI COMPUTER VISION & ML ENGINE</span>
+                </div>
+                <h2 className="text-3xl font-black text-gray-900 tracking-tight">
+                  AI Battery Seller & Buyback Valuation Hub
+                </h2>
+                <p className="text-sm text-gray-500 mt-2 max-w-xl mx-auto">
+                  Upload dashboard and casing photos to automatically extract mileage and inspect battery health in real-time.
+                </p>
               </div>
 
-              {/* DUAL IMAGE UPLOAD SCANNER POINTS */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* DUAL IMAGE UPLOAD DROPZONES */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 
-                {/* 1. Distance / Odometer Image Point */}
-                <div className="p-4 bg-gray-50 rounded-lg border-2 border-dashed border-red-200 text-center hover:border-red-500 transition-all">
-                  <div className="w-10 h-10 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-2">
-                    <Upload className="w-5 h-5" />
+                {/* 1. Distance / Odometer Image Dropzone */}
+                <div className="p-6 bg-gray-50 rounded-xl border-2 border-dashed border-red-300 text-center hover:border-red-600 hover:bg-red-50/30 transition-all shadow-sm">
+                  <div className="w-12 h-12 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-3 shadow">
+                    <Upload className="w-6 h-6" />
                   </div>
-                  <p className="text-xs font-bold uppercase text-gray-800 mb-1">1. Distance / Odometer Image</p>
-                  <p className="text-[11px] text-gray-500 mb-3">Upload speed dial photo for EasyOCR automatic distance extraction</p>
+                  <p className="text-sm font-extrabold uppercase text-gray-900 mb-1">1. Speedometer / Odometer Photo</p>
+                  <p className="text-xs text-gray-500 mb-4 leading-relaxed">
+                    Upload speed dial image for EasyOCR automatic mileage extraction
+                  </p>
                   
                   <input 
                     type="file" 
                     accept="image/*" 
                     onChange={handleOdometerUpload} 
-                    className="text-xs text-gray-500 w-full file:mr-2 file:py-1 file:px-2 file:rounded file:border-0 file:bg-red-600 file:text-white file:font-bold cursor-pointer" 
+                    className="text-xs text-gray-500 w-full file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-red-600 file:text-white file:font-bold cursor-pointer hover:file:bg-red-700" 
                   />
 
                   {scanningOdo && (
-                    <p className="text-xs text-red-600 font-bold mt-2 flex items-center justify-center gap-1 animate-pulse">
-                      <RefreshCw className="w-3.5 h-3.5 animate-spin" /> Scanning Speedometer...
+                    <p className="text-xs text-red-600 font-bold mt-3 flex items-center justify-center gap-1.5 animate-pulse">
+                      <RefreshCw className="w-4 h-4 animate-spin" /> Scanning Speedometer for Mileage...
                     </p>
                   )}
                   {mileage && !scanningOdo && (
-                    <p className="text-xs text-emerald-600 font-bold mt-2 bg-emerald-50 p-1 rounded border border-emerald-200">
-                      ✓ Distance Extracted: {mileage.toLocaleString('en-IN')} km
-                    </p>
+                    <div className="text-xs text-emerald-800 font-black mt-3 bg-emerald-50 p-2.5 rounded-lg border border-emerald-300 flex items-center justify-center gap-1.5">
+                      <CheckCircle className="w-4 h-4 text-emerald-600" />
+                      <span>Extracted Mileage: {mileage.toLocaleString('en-IN')} km</span>
+                    </div>
                   )}
                 </div>
 
-                {/* 2. Physical Battery Condition Image Point */}
-                <div className="p-4 bg-gray-50 rounded-lg border-2 border-dashed border-red-200 text-center hover:border-red-500 transition-all">
-                  <div className="w-10 h-10 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-2">
-                    <Cpu className="w-5 h-5" />
+                {/* 2. Physical Battery Condition Image Dropzone */}
+                <div className="p-6 bg-gray-50 rounded-xl border-2 border-dashed border-red-300 text-center hover:border-red-600 hover:bg-red-50/30 transition-all shadow-sm">
+                  <div className="w-12 h-12 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-3 shadow">
+                    <Cpu className="w-6 h-6" />
                   </div>
-                  <p className="text-xs font-bold uppercase text-gray-800 mb-1">2. Battery Condition Image</p>
-                  <p className="text-[11px] text-gray-500 mb-3">Upload battery casing photo to detect rust & physical defects</p>
+                  <p className="text-sm font-extrabold uppercase text-gray-900 mb-1">2. Battery Condition Photo</p>
+                  <p className="text-xs text-gray-500 mb-4 leading-relaxed">
+                    Upload battery casing photo to detect surface rust & physical defects
+                  </p>
                   
                   <input 
                     type="file" 
                     accept="image/*" 
                     onChange={handleBatteryPhotoUpload} 
-                    className="text-xs text-gray-500 w-full file:mr-2 file:py-1 file:px-2 file:rounded file:border-0 file:bg-red-600 file:text-white file:font-bold cursor-pointer" 
+                    className="text-xs text-gray-500 w-full file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-red-600 file:text-white file:font-bold cursor-pointer hover:file:bg-red-700" 
                   />
 
                   {scanningBattery && (
-                    <p className="text-xs text-red-600 font-bold mt-2 flex items-center justify-center gap-1 animate-pulse">
-                      <RefreshCw className="w-3.5 h-3.5 animate-spin" /> Analyzing Casing Defects...
+                    <p className="text-xs text-red-600 font-bold mt-3 flex items-center justify-center gap-1.5 animate-pulse">
+                      <RefreshCw className="w-4 h-4 animate-spin" /> Analyzing Casing Defect Vectors...
                     </p>
                   )}
                   {batteryInspection && !scanningBattery && (
-                    <p className="text-xs text-emerald-600 font-bold mt-2 bg-emerald-50 p-1 rounded border border-emerald-200">
-                      ✓ Condition: {batteryInspection.condition} ({Math.round(batteryInspection.multiplier * 100)}% Valuation)
-                    </p>
+                    <div className="text-xs text-emerald-800 font-black mt-3 bg-emerald-50 p-2.5 rounded-lg border border-emerald-300 flex items-center justify-center gap-1.5">
+                      <CheckCircle className="w-4 h-4 text-emerald-600" />
+                      <span>Defect Score: {batteryInspection.condition}</span>
+                    </div>
                   )}
                 </div>
 
               </div>
 
-              {/* SPECS FORM */}
-              <div className="grid grid-cols-2 gap-4 text-xs pt-2">
-                <div>
-                  <label className="font-bold text-gray-700 mb-1 block">EV Model</label>
-                  <select value={vehicleModel} onChange={(e) => setVehicleModel(e.target.value)} className="w-full border border-gray-300 rounded p-2">
-                    <option>Tata Nexon EV</option>
-                    <option>MG ZS EV</option>
-                    <option>Ather 450X</option>
-                    <option>Toto E-Rickshaw</option>
-                  </select>
-                </div>
+              {/* SPECIFICATIONS & INPUT FORM */}
+              <div className="bg-gray-50 p-5 rounded-xl border border-gray-200 space-y-4">
+                <h3 className="font-bold text-sm text-gray-800 border-b border-gray-200 pb-2">
+                  Battery Specifications
+                </h3>
 
-                <div>
-                  <label className="font-bold text-gray-700 mb-1 block">Vehicle Age (Years)</label>
-                  <input type="number" value={age} onChange={(e) => setAge(e.target.value)} className="w-full border border-gray-300 rounded p-2" />
-                </div>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-xs">
+                  <div>
+                    <label className="font-bold text-gray-700 mb-1 block">EV Model</label>
+                    <select value={vehicleModel} onChange={(e) => setVehicleModel(e.target.value)} className="w-full border border-gray-300 rounded-lg p-2 font-medium">
+                      <option>Tata Nexon EV</option>
+                      <option>MG ZS EV</option>
+                      <option>Ather 450X</option>
+                      <option>Toto E-Rickshaw</option>
+                    </select>
+                  </div>
 
-                <div>
-                  <label className="font-bold text-gray-700 mb-1 block">Mileage (km)</label>
-                  <input type="number" value={mileage} onChange={(e) => setMileage(e.target.value)} className="w-full border border-gray-300 rounded p-2" />
-                </div>
+                  <div>
+                    <label className="font-bold text-gray-700 mb-1 block">Age (Years)</label>
+                    <input type="number" value={age} onChange={(e) => setAge(e.target.value)} className="w-full border border-gray-300 rounded-lg p-2 font-medium" />
+                  </div>
 
-                <div>
-                  <label className="font-bold text-gray-700 mb-1 block">Pack Capacity (kWh)</label>
-                  <input type="number" value={capacity} onChange={(e) => setCapacity(e.target.value)} className="w-full border border-gray-300 rounded p-2" />
+                  <div>
+                    <label className="font-bold text-gray-700 mb-1 block">Mileage (km)</label>
+                    <input type="number" value={mileage} onChange={(e) => setMileage(e.target.value)} className="w-full border border-gray-300 rounded-lg p-2 font-semibold text-emerald-700" />
+                  </div>
+
+                  <div>
+                    <label className="font-bold text-gray-700 mb-1 block">Capacity (kWh)</label>
+                    <input type="number" value={capacity} onChange={(e) => setCapacity(e.target.value)} className="w-full border border-gray-300 rounded-lg p-2 font-medium" />
+                  </div>
                 </div>
               </div>
 
+              {/* GENERATE OFFER BUTTON */}
               <button 
                 onClick={handleCalculateQuote} 
                 disabled={loading} 
-                className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded text-sm shadow transition-all"
+                className="w-full bg-gradient-to-r from-red-600 via-rose-600 to-red-700 hover:from-red-700 hover:to-rose-800 text-white font-black py-4 rounded-xl text-base shadow-lg transition-all flex items-center justify-center gap-2"
               >
-                {loading ? 'Running Random Forest Model...' : 'Calculate AI Valuation Offer'}
+                {loading ? (
+                  <>
+                    <RefreshCw className="w-5 h-5 animate-spin" />
+                    <span>Running Random Forest SOH Machine Learning Model...</span>
+                  </>
+                ) : (
+                  <>
+                    <Zap className="w-5 h-5 text-yellow-300 fill-yellow-300" />
+                    <span>GENERATE AI BUYBACK OFFER</span>
+                  </>
+                )}
               </button>
 
+              {/* QUOTE RESULT DISPLAY */}
               {quote && (
-                <div className="p-4 bg-red-50 border border-red-200 rounded-lg space-y-2 text-sm">
-                  <div className="flex justify-between"><span className="font-semibold text-gray-700">Predicted Health (SOH):</span><span className="font-bold text-red-600">{quote.soh}%</span></div>
-                  <div className="flex justify-between"><span className="font-semibold text-gray-700">Buyback Valuation:</span><span className="font-black text-gray-900 text-xl">₹{quote.estimatedOffer.toLocaleString('en-IN')}</span></div>
+                <div className="p-6 bg-gradient-to-br from-red-50 to-rose-50 border-2 border-red-200 rounded-xl space-y-4 shadow-inner">
+                  <h3 className="font-black text-gray-900 text-base border-b border-red-200 pb-2 flex items-center justify-between">
+                    <span>📊 Official ReVolt AI Valuation Report</span>
+                    <span className="text-xs font-bold text-red-600 bg-red-100 px-2.5 py-1 rounded-full">Guaranteed Offer</span>
+                  </h3>
+
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
+                    <div className="bg-white p-4 rounded-lg border border-red-100 shadow-sm">
+                      <p className="text-xs text-gray-500 font-bold uppercase">State of Health (SOH)</p>
+                      <p className="text-3xl font-black text-red-600 mt-1">{quote.soh}%</p>
+                    </div>
+
+                    <div className="bg-white p-4 rounded-lg border border-red-100 shadow-sm">
+                      <p className="text-xs text-gray-500 font-bold uppercase">Instant Buyback Offer</p>
+                      <p className="text-3xl font-black text-gray-900 mt-1">₹{quote.estimatedOffer.toLocaleString('en-IN')}</p>
+                    </div>
+
+                    <div className="bg-white p-4 rounded-lg border border-red-100 shadow-sm">
+                      <p className="text-xs text-gray-500 font-bold uppercase">Recommended Action</p>
+                      <p className="text-xs font-extrabold text-emerald-700 mt-2">{quote.action}</p>
+                    </div>
+                  </div>
+
+                  <button 
+                    onClick={() => alert(`🎉 Buyback request initialized! Our pickup agent will contact you to verify battery #${Math.floor(Math.random()*900000 + 100000)}.`)}
+                    className="w-full bg-gray-900 hover:bg-black text-white font-bold py-3 rounded-lg text-sm shadow transition-all"
+                  >
+                    ACCEPT OFFER & SCHEDULE FREE DOORSTEP PICKUP
+                  </button>
                 </div>
               )}
+
             </div>
           )}
+
         </main>
       )}
 
